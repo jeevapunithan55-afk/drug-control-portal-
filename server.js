@@ -7,18 +7,30 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static assets out of folders
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/secret-p2-link', express.static(path.join(__dirname, 'admin')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Relative path mapping prevents root directory mismatches on Render
+const publicPath = path.resolve(__dirname, 'public');
+const adminPath = path.resolve(__dirname, 'admin');
+const uploadsPath = path.resolve(__dirname, 'uploads');
 
-// FORCE root URL to explicitly load index.html to prevent "Not Found"
+app.use('/', express.static(publicPath));
+app.use('/secret-p2-link', express.static(adminPath));
+app.use('/uploads', express.static(uploadsPath));
+
+// Adaptive root catch-all
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    const fallbackFile = path.join(publicPath, 'index.html');
+    if (fs.existsSync(fallbackFile)) {
+        res.sendFile(fallbackFile);
+    } else {
+        res.status(404).send("Error: public/index.html not found. Please verify your folder upload structure on GitHub.");
+    }
 });
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
+    destination: (req, file, cb) => {
+        if (!fs.existsSync(uploadsPath)){ fs.mkdirSync(uploadsPath, { recursive: true }); }
+        cb(null, uploadsPath);
+    },
     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage: storage });
@@ -47,5 +59,5 @@ app.post('/submit-report', upload.single('evidence'), (req, res) => {
     res.send("<h2 style='text-align:center; font-family:sans-serif; margin-top:50px; color:#2ecc71;'>Report Logged Safely.</h2>");
 });
 
-if (!fs.existsSync('./uploads')){ fs.mkdirSync('./uploads'); }
-app.listen(3000, () => console.log('🚀 Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server running dynamically on port ${PORT}`));
