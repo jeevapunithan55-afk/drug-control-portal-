@@ -1,44 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><title>District Command Center Console</title>
+    <meta charset="UTF-8"><title>Drugs Control Encryption Console</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; background: #2c3e50; color: white; }
-        #inbox { width: 40%; background: #34495e; padding: 20px; overflow-y: auto; box-sizing: border-box; }
-        #map-box { width: 60%; height: 100%; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; height: 100vh; background: #0f172a; color: #f8fafc; }
+        #inbox { width: 45%; background: #1e293b; padding: 20px; overflow-y: auto; box-sizing: border-box; border-right: 1px solid #334155; }
+        #map-box { width: 55%; height: 100%; }
         
-        /* Dynamic Jurisdiction Card Theme Outlines */
-        .card { background: #2c3e50; padding: 15px; margin-bottom: 15px; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
-        .card.P2 { border-left: 8px solid #2ecc71; background: #1e3327; }
-        .card.P1 { border-left: 8px solid #e74c3c; background: #3d2424; }
+        .card { background: #0f172a; padding: 18px; margin-bottom: 15px; border-radius: 8px; cursor: pointer; border: 1px solid #334155; }
+        .card.P2 { border-left: 6px solid #10b981; }
+        .card.P1 { border-left: 6px solid #ef4444; }
         
-        .badge { display: inline-block; padding: 3px 8px; font-weight: bold; border-radius: 3px; font-size: 11px; margin-bottom: 8px; color: white; }
-        .badge.P2 { background: #2ecc71; }
-        .badge.P1 { background: #e74c3c; }
+        .badge { display: inline-block; padding: 4px 8px; font-weight: bold; border-radius: 4px; font-size: 11px; margin-bottom: 8px; color: white; text-transform: uppercase; }
+        .badge.P2 { background: #10b981; }
+        .badge.P1 { background: #ef4444; }
+        .badge.comm-alert { background: #3b82f6; }
         
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #1a252f; width: 100%; position: absolute; z-index: 9999; }
-        .login-box { background: #2c3e50; padding: 30px; border-radius: 8px; text-align: center; }
-        .login-input { padding: 10px; font-size: 16px; width: 250px; margin-bottom: 15px; border: none; border-radius: 4px; }
-        .login-btn { background: #ff7675; border: none; padding: 10px 20px; color: white; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        .field-title { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold; margin: 8px 0 2px 0; }
+        .field-data { font-size: 14px; margin: 0 0 8px 0; color: #cbd5e1; }
+
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #0f172a; width: 100%; position: absolute; z-index: 9999; }
+        .login-box { background: #1e293b; padding: 35px; border-radius: 10px; text-align: center; border: 1px solid #334155; }
+        .login-input { padding: 12px; font-size: 16px; width: 260px; margin-bottom: 15px; border: 1px solid #475569; border-radius: 6px; background: #0f172a; color: white; text-align: center; }
+        .login-btn { background: #2563eb; border: none; padding: 12px 25px; color: white; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; }
+        .login-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <h2>DISTRICT CONTROL PANEL</h2>
+        <h2 style="margin-top:0; color:#f1f5f9; font-size: 20px;">TAMIL NADU DRUGS CONTROL ADMIN</h2>
         <input type="password" id="pass-field" class="login-input" placeholder="••••••••"><br>
-        <button class="login-btn" onclick="verifyAdminKey()">Unlock Station Map Node</button>
-        <p id="err-msg" style="color: #ff7675; font-size: 13px;"></p>
+        <button class="login-btn" onclick="verifyAdminKey()">Unlock Control Console</button>
+        <p id="err-msg" style="color: #ef4444; font-size: 13px; margin: 10px 0 0 0;"></p>
     </div>
 </div>
 
 <div id="inbox">
-    <h2>Jurisdiction Control Queue</h2>
-    <hr style="border-color: #455a64;">
-    <div id="reports-container">Awaiting link authorization...</div>
+    <h2>Secure Case Intel Feed</h2>
+    <hr style="border-color: #334155; margin-bottom: 20px;">
+    <div id="reports-container">Awaiting Authorization...</div>
 </div>
 <div id="map-box"></div>
 
@@ -68,21 +72,14 @@
         map = L.map('map-box').setView([13.0988, 80.2520], 13);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
 
-        // Map visual sectors explicitly over administrative console view
-        const p2Coords = [[13.1095, 80.2240], [13.1020, 80.2435], [13.0965, 80.2465], [13.0850, 80.2475], [13.0820, 80.2300], [13.0970, 80.2210]];
-        const p1Coords = [[13.1020, 80.2435], [13.1055, 80.2780], [13.0900, 80.2820], [13.0805, 80.2660], [13.0850, 80.2475], [13.0965, 80.2465]];
-        L.polygon(p2Coords, { color: '#2ecc71', weight: 1, fillOpacity: 0.05 }).addTo(map);
-        L.polygon(p1Coords, { color: '#e74c3c', weight: 1, fillOpacity: 0.05 }).addTo(map);
-
         const container = document.getElementById('reports-container');
-        if (reports.length === 0) { container.innerHTML = "No alerts logged."; return; }
+        if (reports.length === 0) { container.innerHTML = "<p style='color:#64748b;'>No case alerts submitted yet.</p>"; return; }
         container.innerHTML = "";
         
         reports.forEach((report, index) => {
             const sector = report.jurisdiction || 'P2';
-            const sectorColor = sector === 'P1' ? '#e74c3c' : '#2ecc71';
+            const markerColor = sector === 'P1' ? '#ef4444' : '#10b981';
             
-            // 1. Build Color-Coded Inbox Card UI
             const card = document.createElement('div');
             card.className = `card ${sector}`;
             card.onclick = () => {
@@ -91,19 +88,41 @@
             };
             
             card.innerHTML = `
-                <span class="badge ${sector}">${sector} Division Command</span>
-                <p style="margin:5px 0;"><b>Landmark:</b> ${report.location}</p>
-                <p style="font-size:13px; background:#1a252f; padding:8px; border-radius:4px;"><b>Details:</b> ${report.details}</p>
-                ${report.file ? `<a href="/uploads/${report.file}" target="_blank" style="color:#55efc4; font-weight:bold; font-size:12px;" onclick="event.stopPropagation();">[View Photo Proof]</a>` : ''}
+                <span class="badge ${sector}">${sector} Division</span>
+                <span class="badge comm-alert">${report.comm_willingness}</span>
+                
+                <div class="field-title">1. Incident Observations:</div>
+                <div class="field-data">${report.incident_details}</div>
+                
+                <div class="field-title">2. Specified Landmark/Location:</div>
+                <div class="field-data">${report.location}</div>
+                
+                <div class="field-title">3. Timeline Data:</div>
+                <div class="field-data">${report.incident_time}</div>
+                
+                <div class="field-title">4. Substance Classification:</div>
+                <div class="field-data">${report.substance_known || 'Not Specified'}</div>
+                
+                <div class="field-title">5. Suspect Physical Profile:</div>
+                <div class="field-data">${report.details}</div>
+                
+                <div class="field-title">6. Suspect Identity/Vehicles:</div>
+                <div class="field-data">${report.user_details || 'None Provided'}</div>
+                
+                <div class="field-title">Contact Channels:</div>
+                <div class="field-data"><b>Number:</b> ${report.contact_number || 'N/A (100% Anonymous)'}</div>
+                
+                <div style="margin-top: 12px;">
+                    <a href="/uploads/${report.file}" target="_blank" style="color:#3b82f6; font-weight:bold; font-size:13px; text-decoration:none;" onclick="event.stopPropagation();">📂 OPEN ATTACHED EVIDENCE PROOF</a>
+                </div>
             `;
             container.appendChild(card);
 
-            // 2. Set Matching Map Indicator Dot Color
             const marker = L.circleMarker([report.lat, report.lng], { 
-                radius: 11, fillColor: sectorColor, color: '#fff', weight: 2, fillOpacity: 0.9 
+                radius: 9, fillColor: markerColor, color: '#fff', weight: 1.5, fillOpacity: 0.9 
             }).addTo(map);
             
-            marker.bindPopup(`<b>[${sector} INCIDENT POSITION]</b><br>Landmark: ${report.location}`);
+            marker.bindPopup(`<b>[${sector} Alert]</b><br>Landmark: ${report.location}<br>Substance: ${report.substance_known}`);
             mapMarkers[index] = marker;
         });
     }

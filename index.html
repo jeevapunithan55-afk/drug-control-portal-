@@ -3,97 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Public Information Portal</title>
+    <title>Tamil Nadu Drugs Control Initiative</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #1a252f; color: white; padding: 10px; margin: 0; box-sizing: border-box; }
-        .box { max-width: 600px; margin: 10px auto; background: #2c3e50; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { text-align: center; color: #ecf0f1; font-size: 22px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .section-heading { background: #34495e; padding: 6px 10px; margin-top: 20px; border-radius: 4px; border-left: 4px solid #3498db; font-size: 14px; font-weight: bold; color: #ecf0f1; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 13px; color: #bdc3c7; }
-        input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: none; box-sizing: border-box; background: #f5f6fa; color: #2c3e50; font-size: 14px; margin-bottom: 5px; }
-        textarea { height: 70px; resize: vertical; }
-        .radio-group { display: flex; gap: 15px; margin: 5px 0 10px; }
-        .radio-item { display: flex; align-items: center; gap: 5px; font-size: 14px; }
-        .radio-item input { width: auto; margin: 0; }
-        .btn { background: #3498db; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; border: none; padding: 14px; font-size: 16px; border-radius: 4px; width: 100%; transition: background 0.2s; }
-        .btn:hover { background: #2980b9; }
-        #picker-map { width: 100%; height: 280px; border-radius: 4px; margin-top: 5px; border: 1px solid #455a64; }
-        .required { color: #e74c3c; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #111c24; color: #e2e8f0; padding: 15px; margin: 0; box-sizing: border-box; }
+        .box { max-width: 650px; margin: 15px auto; background: #1e293b; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        
+        /* Banner & Motivation Layout styling */
+        .initiative-banner { background: linear-gradient(135deg, #7f1d1d, #450a0a); padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #ef4444; margin-bottom: 25px; }
+        .initiative-banner h1 { margin: 0 0 10px 0; font-size: 22px; color: #fca5a5; text-transform: uppercase; letter-spacing: 1px; }
+        .initiative-banner p { font-size: 14px; line-height: 1.5; color: #fecaca; font-style: italic; margin: 0 0 15px 0; }
+        .privacy-shield { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 10px; border-radius: 6px; font-size: 12px; color: #34d399; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .section-heading { background: #334155; padding: 8px 12px; margin-top: 25px; border-radius: 6px; border-left: 4px solid #3b82f6; font-size: 14px; font-weight: bold; color: #f1f5f9; text-transform: uppercase; }
+        label { display: block; margin: 15px 0 6px; font-weight: 600; font-size: 13px; color: #94a3b8; }
+        input[type="text"], input[type="datetime-local"], textarea, select { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #475569; box-sizing: border-box; background: #0f172a; color: #f8fafc; font-size: 14px; transition: border 0.2s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #3b82f6; }
+        textarea { height: 90px; resize: vertical; }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; background: #0f172a; padding: 15px; border-radius: 6px; border: 1px solid #475569; }
+        .radio-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .radio-item input { cursor: pointer; }
+        .radio-item label { margin: 0; color: #e2e8f0; cursor: pointer; font-weight: normal; }
+        
+        .btn { background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-top: 25px; border: none; padding: 16px; font-size: 16px; border-radius: 6px; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.2s; }
+        .btn:hover { background: #1d4ed8; }
+        #picker-map { width: 100%; height: 260px; border-radius: 6px; margin-top: 5px; border: 1px solid #475569; }
+        .required { color: #ef4444; margin-left: 2px; }
+        .note-block { background: rgba(239, 68, 68, 0.1); border: 1px dashed #ef4444; color: #fca5a5; padding: 10px; border-radius: 6px; font-size: 12px; margin-top: 15px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 <div class="box">
-    <h2>Secure Information Submission Portal</h2>
-    <p style="text-align: center; margin: 0; font-size: 12px; color: #bdc3c7;">Please provide accurate details below. All submissions are treated strictly confidentially.</p>
+    
+    <!-- Big Motivational & Initiative Message Box -->
+    <div class="initiative-banner">
+        <h1>Tamil Nadu Drugs Control Initiative</h1>
+        <p>"Your Bravery Can Save a Generation. The choices we make today shape our youth tomorrow. Drugs tear families apart—but a single piece of information can break the chain. Step up. Be the shield."</p>
+        <div class="privacy-shield">
+            🛡️ Privacy Guarantee: Your identity is completely shielded. We do not track your IP address or device location. You are safe.
+        </div>
+    </div>
     
     <form action="/submit-report" method="POST" enctype="multipart/form-data">
-        <!-- Hidden values sent to backend mapping -->
+        <!-- Hidden values for backend spatial parsing -->
         <input type="hidden" name="lat" id="lat" value="13.0988">
         <input type="hidden" name="lng" id="lng" value="80.2484">
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="P2">
         
-        <!-- SECTION 1: INCIDENT LOCATION -->
-        <div class="section-heading">I. Incident Location Details</div>
+        <div class="section-heading">I. Incident & Location Details</div>
 
-        <label>1. Pinpoint Location on the Map <span class="required">*</span></label>
-        <p style="margin: 0 0 8px 0; font-size: 11px; color: #95a5a6;">Tap or drag the marker to the exact spot where the incident takes place.</p>
+        <label>1. Incident Details (What did you observe?) <span class="required">*</span></label>
+        <textarea name="incident_details" required placeholder="Describe the behavior, transaction details, patterns, or any key details you noticed..."></textarea>
+
+        <label>Secret Operational Route Map (Tap/Adjust Pin Location)</label>
         <div id="picker-map"></div>
-        
-        <label style="margin-top:15px;">2. Specific Address / Landmark Details <span class="required">*</span></label>
-        <input type="text" name="location" required placeholder="e.g., Near the corner of Cook Road, opposite the school gate">
 
-        <!-- SECTION 2: ACTIVITY DETAILS -->
-        <div class="section-heading">II. Activity & Timeline Details</div>
+        <label style="margin-top:15px;">2. Location of Incident (Landmarks / Specific Address) <span class="required">*</span></label>
+        <input type="text" name="location" required placeholder="e.g., Near Cook Road corner, opposite the local school entrance">
 
-        <label>3. Incident Scene Status <span class="required">*</span></label>
+        <label>3. Date & Time of Incident <span class="required">*</span></label>
+        <input type="datetime-local" name="incident_time" required>
+
+        <label>4. Substance Involved (If known)</label>
+        <input type="text" name="substance_known" placeholder="e.g., Pills, powder, liquid variants, unknown chemical substances">
+
+        <div class="section-heading">II. Involved Person Profiles</div>
+
+        <label>5. Drug User / Dealer Description (Physical traits, clothing, age group) <span class="required">*</span></label>
+        <textarea name="details" required placeholder="Provide structural details: approximate height, clothing styles, identification marks..."></textarea>
+
+        <label>6. Drug User Details (Names, aliases, vehicle numbers) <span class="text-transform: lowercase; color: #64748b;">[Optional]</span></label>
+        <input type="text" name="user_details" placeholder="e.g., Known as 'Raju', black motorbike with registration matching TN-01-XXXX">
+
+        <div class="section-heading">III. Mandatory Proof & Follow-up Consent</div>
+
+        <label>7. Mandatory Evidence Upload (Photo, video, audio, or document) <span class="required">*</span></label>
+        <input type="file" name="evidence" required style="color: #94a3b8; padding: 5px 0;">
+        <div class="note-block">⚠️ NOTE: Compulsory to upload an evidence file to submit the information to the officials.</div>
+
+        <label style="margin-top:20px;">Communication Willingness (How can officials reach out for clarity?)</label>
         <div class="radio-group">
             <div class="radio-item">
-                <input type="radio" id="scene_active" name="scene_status" value="Active" checked>
-                <label for="scene_active" style="margin:0; color:white; cursor:pointer;">Active Now (Ongoing)</label>
+                <input type="radio" id="comm_none" name="comm_willingness" value="Anonymous" checked onclick="togglePhoneInput(false)">
+                <label for="comm_none">Do not contact me / Stay 100% anonymous</label>
             </div>
             <div class="radio-item">
-                <input type="radio" id="scene_inactive" name="scene_status" value="Inactive">
-                <label for="scene_inactive" style="margin:0; color:white; cursor:pointer;">Inactive (Past Incident / Regular Spot)</label>
+                <input type="radio" id="comm_msg" name="comm_willingness" value="Text Only" onclick="togglePhoneInput(true)">
+                <label for="comm_msg">WhatsApp / SMS Messages Only</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="comm_call" name="comm_willingness" value="Calls Allowed" onclick="togglePhoneInput(true)">
+                <label for="comm_call">Phone Calls Allowed</label>
             </div>
         </div>
 
-        <label>4. Approximate Time / Frequency of Occurrence <span class="required">*</span></label>
-        <input type="text" name="occurrence_time" required placeholder="e.g., Every day between 6:00 PM and 9:00 PM, or happening right now">
-
-        <label>5. Comprehensive Description of Activity & Involved Persons <span class="required">*</span></label>
-        <textarea name="details" required placeholder="Please provide physical descriptions, vehicles involved (color, model, plate numbers), or items observed..."></textarea>
-
-        <!-- SECTION 3: EVIDENCE -->
-        <div class="section-heading">III. Supporting Material</div>
-
-        <label>6. Upload Photo / Document Evidence <span class="required">*</span></label>
-        <input type="file" name="evidence" required style="background: none; color: white; padding: 5px 0;">
+        <div id="contact-number-wrapper" style="display: none; margin-top: 10px;">
+            <label>Contact Number <span class="required">*</span></label>
+            <input type="text" id="contact_number" name="contact_number" placeholder="Enter your mobile phone number">
+        </div>
 
         <button type="submit" class="btn">Submit Information Securely</button>
     </form>
 </div>
 
 <script>
-    // Initialize standard clean map centered around coordinates
     const pickerMap = L.map('picker-map', { tap: false }).setView([13.0988, 80.2520], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(pickerMap);
 
-    // Keep hidden polygon configurations for background calculation rules
-    const p2PolygonCoords = [
-        [13.1095, 80.2240], [13.1020, 80.2435], [13.0965, 80.2465],
-        [13.0850, 80.2475], [13.0820, 80.2300], [13.0970, 80.2210]
-    ];
     const p1PolygonCoords = [
         [13.1020, 80.2435], [13.1055, 80.2780], [13.0900, 80.2820],
         [13.0805, 80.2660], [13.0850, 80.2475], [13.0965, 80.2465]
     ];
 
-    // Standard blue pin marker
     let currentMarker = L.marker([13.0988, 80.2520], { draggable: true }).addTo(pickerMap);
 
-    // Ray-casting algorithm to evaluate coordinate positioning invisibly
     function isMarkerInsidePolygon(lat, lng, polyCoords) {
         let x = lat, y = lng;
         let inside = false;
@@ -109,12 +134,7 @@
     function checkJurisdiction(lat, lng) {
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
-        
-        // Secret classification assignment checks out in the back
-        let sector = "P2"; 
-        if (isMarkerInsidePolygon(lat, lng, p1PolygonCoords)) {
-            sector = "P1";
-        }
+        let sector = isMarkerInsidePolygon(lat, lng, p1PolygonCoords) ? "P1" : "P2";
         document.getElementById('jurisdiction').value = sector;
     }
 
@@ -127,6 +147,19 @@
         const pos = currentMarker.getLatLng();
         checkJurisdiction(pos.lat, pos.lng);
     });
+
+    function togglePhoneInput(show) {
+        const wrapper = document.getElementById('contact-number-wrapper');
+        const input = document.getElementById('contact_number');
+        if (show) {
+            wrapper.style.display = 'block';
+            input.required = true;
+        } else {
+            wrapper.style.display = 'none';
+            input.required = false;
+            input.value = '';
+        }
+    }
 </script>
 </body>
 </html>
