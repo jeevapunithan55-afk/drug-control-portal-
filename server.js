@@ -7,27 +7,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Relative path mapping prevents root directory mismatches on Render
-const publicPath = path.resolve(__dirname, 'public');
-const adminPath = path.resolve(__dirname, 'admin');
-const uploadsPath = path.resolve(__dirname, 'uploads');
+// Dynamic assets route pointing to the root where the files sit
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', express.static(publicPath));
-app.use('/secret-p2-link', express.static(adminPath));
-app.use('/uploads', express.static(uploadsPath));
-
-// Adaptive root catch-all
+// Serve the citizen submission form directly from the root file location
 app.get('/', (req, res) => {
-    const fallbackFile = path.join(publicPath, 'index.html');
-    if (fs.existsSync(fallbackFile)) {
-        res.sendFile(fallbackFile);
-    } else {
-        res.status(404).send("Error: public/index.html not found. Please verify your folder upload structure on GitHub.");
-    }
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve the admin control interface directly from the root file location
+app.get('/secret-p2-link/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        const uploadsPath = path.join(__dirname, 'uploads');
         if (!fs.existsSync(uploadsPath)){ fs.mkdirSync(uploadsPath, { recursive: true }); }
         cb(null, uploadsPath);
     },
@@ -60,4 +55,4 @@ app.post('/submit-report', upload.single('evidence'), (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running dynamically on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
