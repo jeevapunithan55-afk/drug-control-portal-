@@ -1,63 +1,86 @@
-Hy<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Essential viewport tags for Android and iPhone scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Tamil Nadu Drug Control - Anonymous Portal</title>
+    <title>Public Information Portal</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background-color: #1a252f; color: white; padding: 10px; margin: 0; box-sizing: border-box; }
-        .box { max-width: 550px; margin: 10px auto; background: #2c3e50; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { text-align: center; color: #ff7675; font-size: 20px; margin-bottom: 5px; }
-        .info-box { background: rgba(255,118,117,0.1); border-left: 4px solid #ff7675; padding: 12px; margin: 10px 0; border-radius: 4px; font-size: 12px; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 13px; }
-        input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: none; box-sizing: border-box; background: #f5f6fa; color: #2c3e50; font-size: 14px; }
-        textarea { height: 60px; }
-        .btn { background: #ff7675; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; border: none; padding: 14px; font-size: 16px; border-radius: 4px; width: 100%; }
-        .geo { background: rgba(9, 132, 227, 0.2); padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; color: #74b9ff; margin-bottom: 10px; font-weight: bold; }
-        #picker-map { width: 100%; height: 260px; border-radius: 4px; margin-top: 5px; border: 1px solid #455a64; }
+        .box { max-width: 600px; margin: 10px auto; background: #2c3e50; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        h2 { text-align: center; color: #ecf0f1; font-size: 22px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-heading { background: #34495e; padding: 6px 10px; margin-top: 20px; border-radius: 4px; border-left: 4px solid #3498db; font-size: 14px; font-weight: bold; color: #ecf0f1; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 13px; color: #bdc3c7; }
+        input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: none; box-sizing: border-box; background: #f5f6fa; color: #2c3e50; font-size: 14px; margin-bottom: 5px; }
+        textarea { height: 70px; resize: vertical; }
+        .radio-group { display: flex; gap: 15px; margin: 5px 0 10px; }
+        .radio-item { display: flex; align-items: center; gap: 5px; font-size: 14px; }
+        .radio-item input { width: auto; margin: 0; }
+        .btn { background: #3498db; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; border: none; padding: 14px; font-size: 16px; border-radius: 4px; width: 100%; transition: background 0.2s; }
+        .btn:hover { background: #2980b9; }
+        #picker-map { width: 100%; height: 280px; border-radius: 4px; margin-top: 5px; border: 1px solid #455a64; }
+        .required { color: #e74c3c; }
     </style>
 </head>
 <body>
 <div class="box">
-    <h2>TAMIL NADU DRUG CONTROL</h2>
-    <p style="text-align: center; margin: 0; font-size: 11px; color: #b2bec3;">Joint Sector Command Portal</p>
-    
-    <div class="info-box">
-        🛡️ Select the exact incident location directly on the boundary map below. The system automatically routes the logs to the appropriate local station database.
-    </div>
+    <h2>Secure Information Submission Portal</h2>
+    <p style="text-align: center; margin: 0; font-size: 12px; color: #bdc3c7;">Please provide accurate details below. All submissions are treated strictly confidentially.</p>
     
     <form action="/submit-report" method="POST" enctype="multipart/form-data">
+        <!-- Hidden values sent to backend mapping -->
         <input type="hidden" name="lat" id="lat" value="13.0988">
         <input type="hidden" name="lng" id="lng" value="80.2484">
-        <!-- Hidden input element passing jurisdiction sector to the backend array -->
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="P2">
         
-        <div class="geo" id="geo_txt">📍 P2 Otteri Sector Boundary Selected</div>
+        <!-- SECTION 1: INCIDENT LOCATION -->
+        <div class="section-heading">I. Incident Location Details</div>
 
-        <label>1. Location Map Marker (Tap & Adjust Pin) *</label>
+        <label>1. Pinpoint Location on the Map <span class="required">*</span></label>
+        <p style="margin: 0 0 8px 0; font-size: 11px; color: #95a5a6;">Tap or drag the marker to the exact spot where the incident takes place.</p>
         <div id="picker-map"></div>
         
-        <label style="margin-top:15px;">2. Landmark / Street Address Text *</label>
-        <input type="text" name="location" required placeholder="e.g., Cook Road corner / near Over Bridge">
+        <label style="margin-top:15px;">2. Specific Address / Landmark Details <span class="required">*</span></label>
+        <input type="text" name="location" required placeholder="e.g., Near the corner of Cook Road, opposite the school gate">
 
-        <label>3. Activity Details & Suspect Description *</label>
-        <textarea name="details" required placeholder="Describe substance, vehicle identifiers, or physical descriptions..."></textarea>
+        <!-- SECTION 2: ACTIVITY DETAILS -->
+        <div class="section-heading">II. Activity & Timeline Details</div>
 
-        <label>4. Evidence Upload *</label>
-        <input type="file" name="evidence" required style="background: none; color: white;">
+        <label>3. Incident Scene Status <span class="required">*</span></label>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" id="scene_active" name="scene_status" value="Active" checked>
+                <label for="scene_active" style="margin:0; color:white; cursor:pointer;">Active Now (Ongoing)</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" id="scene_inactive" name="scene_status" value="Inactive">
+                <label for="scene_inactive" style="margin:0; color:white; cursor:pointer;">Inactive (Past Incident / Regular Spot)</label>
+            </div>
+        </div>
 
-        <button type="submit" class="btn">DISPATCH SAFE REPORT</button>
+        <label>4. Approximate Time / Frequency of Occurrence <span class="required">*</span></label>
+        <input type="text" name="occurrence_time" required placeholder="e.g., Every day between 6:00 PM and 9:00 PM, or happening right now">
+
+        <label>5. Comprehensive Description of Activity & Involved Persons <span class="required">*</span></label>
+        <textarea name="details" required placeholder="Please provide physical descriptions, vehicles involved (color, model, plate numbers), or items observed..."></textarea>
+
+        <!-- SECTION 3: EVIDENCE -->
+        <div class="section-heading">III. Supporting Material</div>
+
+        <label>6. Upload Photo / Document Evidence <span class="required">*</span></label>
+        <input type="file" name="evidence" required style="background: none; color: white; padding: 5px 0;">
+
+        <button type="submit" class="btn">Submit Information Securely</button>
     </form>
 </div>
 
 <script>
-    const pickerMap = L.map('picker-map', { tap: false }).setView([13.0988, 80.2520], 13);
+    // Initialize standard clean map centered around coordinates
+    const pickerMap = L.map('picker-map', { tap: false }).setView([13.0988, 80.2520], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
 
-    // Coordinate chains mapping the exact limits from your system document
+    // Keep hidden polygon configurations for background calculation rules
     const p2PolygonCoords = [
         [13.1095, 80.2240], [13.1020, 80.2435], [13.0965, 80.2465],
         [13.0850, 80.2475], [13.0820, 80.2300], [13.0970, 80.2210]
@@ -67,13 +90,10 @@ Hy<!DOCTYPE html>
         [13.0805, 80.2660], [13.0850, 80.2475], [13.0965, 80.2465]
     ];
 
-    // Render visual boundaries on mobile screens
-    const p2Layer = L.polygon(p2PolygonCoords, { color: '#2ecc71', fillColor: '#2ecc71', fillOpacity: 0.25 }).addTo(pickerMap);
-    const p1Layer = L.polygon(p1PolygonCoords, { color: '#e74c3c', fillColor: '#e74c3c', fillOpacity: 0.25 }).addTo(pickerMap);
+    // Standard blue pin marker
+    let currentMarker = L.marker([13.0988, 80.2520], { draggable: true }).addTo(pickerMap);
 
-    let currentMarker = L.marker([13.0988, 80.2450], { draggable: true }).addTo(pickerMap);
-
-    // Helper checking if a pin falls inside a mapped layout boundary
+    // Ray-casting algorithm to evaluate coordinate positioning invisibly
     function isMarkerInsidePolygon(lat, lng, polyCoords) {
         let x = lat, y = lng;
         let inside = false;
@@ -90,21 +110,12 @@ Hy<!DOCTYPE html>
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
         
+        // Secret classification assignment checks out in the back
         let sector = "P2"; 
-        let textDisplay = "📍 P2 Otteri Sector Boundary Selected";
-        let colorTheme = "#55efc4";
-
         if (isMarkerInsidePolygon(lat, lng, p1PolygonCoords)) {
             sector = "P1";
-            textDisplay = "🚨 P1 Pulianthope Sector Boundary Selected";
-            colorTheme = "#ff7675";
         }
-
         document.getElementById('jurisdiction').value = sector;
-        const geoBox = document.getElementById('geo_txt');
-        geoBox.innerText = textDisplay;
-        geoBox.style.color = colorTheme;
-        geoBox.style.backgroundColor = sector === "P1" ? "rgba(231, 76, 60, 0.2)" : "rgba(46, 204, 113, 0.2)";
     }
 
     pickerMap.on('click', function(e) {
