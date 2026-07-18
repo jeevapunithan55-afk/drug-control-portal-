@@ -1,0 +1,121 @@
+Hy<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Essential viewport tags for Android and iPhone scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Tamil Nadu Drug Control - Anonymous Portal</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1a252f; color: white; padding: 10px; margin: 0; box-sizing: border-box; }
+        .box { max-width: 550px; margin: 10px auto; background: #2c3e50; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        h2 { text-align: center; color: #ff7675; font-size: 20px; margin-bottom: 5px; }
+        .info-box { background: rgba(255,118,117,0.1); border-left: 4px solid #ff7675; padding: 12px; margin: 10px 0; border-radius: 4px; font-size: 12px; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 13px; }
+        input, textarea, select { width: 100%; padding: 10px; border-radius: 4px; border: none; box-sizing: border-box; background: #f5f6fa; color: #2c3e50; font-size: 14px; }
+        textarea { height: 60px; }
+        .btn { background: #ff7675; color: white; font-weight: bold; cursor: pointer; margin-top: 15px; border: none; padding: 14px; font-size: 16px; border-radius: 4px; width: 100%; }
+        .geo { background: rgba(9, 132, 227, 0.2); padding: 8px; border-radius: 4px; text-align: center; font-size: 12px; color: #74b9ff; margin-bottom: 10px; font-weight: bold; }
+        #picker-map { width: 100%; height: 260px; border-radius: 4px; margin-top: 5px; border: 1px solid #455a64; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>TAMIL NADU DRUG CONTROL</h2>
+    <p style="text-align: center; margin: 0; font-size: 11px; color: #b2bec3;">Joint Sector Command Portal</p>
+    
+    <div class="info-box">
+        🛡️ Select the exact incident location directly on the boundary map below. The system automatically routes the logs to the appropriate local station database.
+    </div>
+    
+    <form action="/submit-report" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="lat" id="lat" value="13.0988">
+        <input type="hidden" name="lng" id="lng" value="80.2484">
+        <!-- Hidden input element passing jurisdiction sector to the backend array -->
+        <input type="hidden" name="jurisdiction" id="jurisdiction" value="P2">
+        
+        <div class="geo" id="geo_txt">📍 P2 Otteri Sector Boundary Selected</div>
+
+        <label>1. Location Map Marker (Tap & Adjust Pin) *</label>
+        <div id="picker-map"></div>
+        
+        <label style="margin-top:15px;">2. Landmark / Street Address Text *</label>
+        <input type="text" name="location" required placeholder="e.g., Cook Road corner / near Over Bridge">
+
+        <label>3. Activity Details & Suspect Description *</label>
+        <textarea name="details" required placeholder="Describe substance, vehicle identifiers, or physical descriptions..."></textarea>
+
+        <label>4. Evidence Upload *</label>
+        <input type="file" name="evidence" required style="background: none; color: white;">
+
+        <button type="submit" class="btn">DISPATCH SAFE REPORT</button>
+    </form>
+</div>
+
+<script>
+    const pickerMap = L.map('picker-map', { tap: false }).setView([13.0988, 80.2520], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
+
+    // Coordinate chains mapping the exact limits from your system document
+    const p2PolygonCoords = [
+        [13.1095, 80.2240], [13.1020, 80.2435], [13.0965, 80.2465],
+        [13.0850, 80.2475], [13.0820, 80.2300], [13.0970, 80.2210]
+    ];
+    const p1PolygonCoords = [
+        [13.1020, 80.2435], [13.1055, 80.2780], [13.0900, 80.2820],
+        [13.0805, 80.2660], [13.0850, 80.2475], [13.0965, 80.2465]
+    ];
+
+    // Render visual boundaries on mobile screens
+    const p2Layer = L.polygon(p2PolygonCoords, { color: '#2ecc71', fillColor: '#2ecc71', fillOpacity: 0.25 }).addTo(pickerMap);
+    const p1Layer = L.polygon(p1PolygonCoords, { color: '#e74c3c', fillColor: '#e74c3c', fillOpacity: 0.25 }).addTo(pickerMap);
+
+    let currentMarker = L.marker([13.0988, 80.2450], { draggable: true }).addTo(pickerMap);
+
+    // Helper checking if a pin falls inside a mapped layout boundary
+    function isMarkerInsidePolygon(lat, lng, polyCoords) {
+        let x = lat, y = lng;
+        let inside = false;
+        for (let i = 0, j = polyCoords.length - 1; i < polyCoords.length; j = i++) {
+            let xi = polyCoords[i][0], yi = polyCoords[i][1];
+            let xj = polyCoords[j][0], yj = polyCoords[j][1];
+            let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    function checkJurisdiction(lat, lng) {
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+        
+        let sector = "P2"; 
+        let textDisplay = "📍 P2 Otteri Sector Boundary Selected";
+        let colorTheme = "#55efc4";
+
+        if (isMarkerInsidePolygon(lat, lng, p1PolygonCoords)) {
+            sector = "P1";
+            textDisplay = "🚨 P1 Pulianthope Sector Boundary Selected";
+            colorTheme = "#ff7675";
+        }
+
+        document.getElementById('jurisdiction').value = sector;
+        const geoBox = document.getElementById('geo_txt');
+        geoBox.innerText = textDisplay;
+        geoBox.style.color = colorTheme;
+        geoBox.style.backgroundColor = sector === "P1" ? "rgba(231, 76, 60, 0.2)" : "rgba(46, 204, 113, 0.2)";
+    }
+
+    pickerMap.on('click', function(e) {
+        currentMarker.setLatLng(e.latlng);
+        checkJurisdiction(e.latlng.lat, e.latlng.lng);
+    });
+
+    currentMarker.on('dragend', function(e) {
+        const pos = currentMarker.getLatLng();
+        checkJurisdiction(pos.lat, pos.lng);
+    });
+</script>
+</body>
+</html>

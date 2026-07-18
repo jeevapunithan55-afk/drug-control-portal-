@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>District Command Center Console</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; display: flex; height: 100vh; background: #2c3e50; color: white; }
+        #inbox { width: 40%; background: #34495e; padding: 20px; overflow-y: auto; box-sizing: border-box; }
+        #map-box { width: 60%; height: 100%; }
+        
+        /* Dynamic Jurisdiction Card Theme Outlines */
+        .card { background: #2c3e50; padding: 15px; margin-bottom: 15px; border-radius: 6px; cursor: pointer; transition: transform 0.2s; }
+        .card.P2 { border-left: 8px solid #2ecc71; background: #1e3327; }
+        .card.P1 { border-left: 8px solid #e74c3c; background: #3d2424; }
+        
+        .badge { display: inline-block; padding: 3px 8px; font-weight: bold; border-radius: 3px; font-size: 11px; margin-bottom: 8px; color: white; }
+        .badge.P2 { background: #2ecc71; }
+        .badge.P1 { background: #e74c3c; }
+        
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #1a252f; width: 100%; position: absolute; z-index: 9999; }
+        .login-box { background: #2c3e50; padding: 30px; border-radius: 8px; text-align: center; }
+        .login-input { padding: 10px; font-size: 16px; width: 250px; margin-bottom: 15px; border: none; border-radius: 4px; }
+        .login-btn { background: #ff7675; border: none; padding: 10px 20px; color: white; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h2>DISTRICT CONTROL PANEL</h2>
+        <input type="password" id="pass-field" class="login-input" placeholder="••••••••"><br>
+        <button class="login-btn" onclick="verifyAdminKey()">Unlock Station Map Node</button>
+        <p id="err-msg" style="color: #ff7675; font-size: 13px;"></p>
+    </div>
+</div>
+
+<div id="inbox">
+    <h2>Jurisdiction Control Queue</h2>
+    <hr style="border-color: #455a64;">
+    <div id="reports-container">Awaiting link authorization...</div>
+</div>
+<div id="map-box"></div>
+
+<script>
+    let map;
+    const mapMarkers = {};
+
+    function verifyAdminKey() {
+        const inputPass = document.getElementById('pass-field').value;
+        fetch('/admin-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: inputPass })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                document.getElementById('login-screen').style.display = 'none';
+                loadMapSystem(res.data);
+            } else {
+                document.getElementById('err-msg').innerText = res.msg;
+            }
+        });
+    }
+
+    function loadMapSystem(reports) {
+        map = L.map('map-box').setView([13.0988, 80.2520], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
+
+        // Map visual sectors explicitly over administrative console view
+        const p2Coords = [[13.1095, 80.2240], [13.1020, 80.2435], [13.0965, 80.2465], [13.0850, 80.2475], [13.0820, 80.2300], [13.0970, 80.2210]];
+        const p1Coords = [[13.1020, 80.2435], [13.1055, 80.2780], [13.0900, 80.2820], [13.0805, 80.2660], [13.0850, 80.2475], [13.0965, 80.2465]];
+        L.polygon(p2Coords, { color: '#2ecc71', weight: 1, fillOpacity: 0.05 }).addTo(map);
+        L.polygon(p1Coords, { color: '#e74c3c', weight: 1, fillOpacity: 0.05 }).addTo(map);
+
+        const container = document.getElementById('reports-container');
+        if (reports.length === 0) { container.innerHTML = "No alerts logged."; return; }
+        container.innerHTML = "";
+        
+        reports.forEach((report, index) => {
+            const sector = report.jurisdiction || 'P2';
+            const sectorColor = sector === 'P1' ? '#e74c3c' : '#2ecc71';
+            
+            // 1. Build Color-Coded Inbox Card UI
+            const card = document.createElement('div');
+            card.className = `card ${sector}`;
+            card.onclick = () => {
+                map.setView([report.lat, report.lng], 16);
+                mapMarkers[index].openPopup();
+            };
+            
+            card.innerHTML = `
+                <span class="badge ${sector}">${sector} Division Command</span>
+                <p style="margin:5px 0;"><b>Landmark:</b> ${report.location}</p>
+                <p style="font-size:13px; background:#1a252f; padding:8px; border-radius:4px;"><b>Details:</b> ${report.details}</p>
+                ${report.file ? `<a href="/uploads/${report.file}" target="_blank" style="color:#55efc4; font-weight:bold; font-size:12px;" onclick="event.stopPropagation();">[View Photo Proof]</a>` : ''}
+            `;
+            container.appendChild(card);
+
+            // 2. Set Matching Map Indicator Dot Color
+            const marker = L.circleMarker([report.lat, report.lng], { 
+                radius: 11, fillColor: sectorColor, color: '#fff', weight: 2, fillOpacity: 0.9 
+            }).addTo(map);
+            
+            marker.bindPopup(`<b>[${sector} INCIDENT POSITION]</b><br>Landmark: ${report.location}`);
+            mapMarkers[index] = marker;
+        });
+    }
+</script>
+</body>
+</html>
