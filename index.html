@@ -52,12 +52,19 @@
         <input type="hidden" name="lng" id="lng" value="80.2484">
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="P2">
         
-        <div class="section-heading">I. Incident & Location Details</div>
+    <div class="section-heading">I. Incident & Location Details</div>
 
         <label>1. Incident Details (What did you observe?) <span class="required">*</span></label>
         <textarea name="incident_details" required placeholder="Describe the behavior, transaction details, patterns, or any key details you noticed..."></textarea>
 
-        <label>Secret Operational Route Map (Tap/Adjust Pin Location)</label>
+        <!-- INSERTED: ACTIVE / INACTIVE SCENE DROPDOWN -->
+        <label>Incident Scene Status <span class="required">*</span></label>
+        <select name="scene_status" required>
+            <option value="Active Now (Ongoing)">Active Now (Ongoing)</option>
+            <option value="Inactive (Past Incident / Regular Spot)">Inactive (Past Incident / Regular Spot)</option>
+        </select>
+
+        <label style="margin-top:15px;">Secret Operational Route Map (Tap/Adjust Pin Location)</label>
         <div id="picker-map"></div>
 
         <label style="margin-top:15px;">2. Location of Incident (Landmarks / Specific Address) <span class="required">*</span></label>

@@ -42,10 +42,11 @@ app.post('/submit-report', upload.single('evidence'), (req, res) => {
     // Encapsulates the explicit structural database updates 
     const newReport = {
         incident_details: req.body.incident_details || "No observation metrics logged.",
+        scene_status: req.body.scene_status || "Active Now (Ongoing)", // Captures the dropdown value
         location: req.body.location,
         incident_time: req.body.incident_time || "Not logged",
         substance_known: req.body.substance_known || "",
-        details: req.body.details, // Maps User Profile Description (compulsory)
+        details: req.body.details, 
         user_details: req.body.user_details || "",
         comm_willingness: req.body.comm_willingness || "Anonymous",
         contact_number: req.body.contact_number || "",
