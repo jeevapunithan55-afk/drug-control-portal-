@@ -7,9 +7,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/', express.static(path.join(__dirname, 'public')));
+// Serve static assets out of folders
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/secret-p2-link', express.static(path.join(__dirname, 'admin')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// FORCE root URL to explicitly load index.html to prevent "Not Found"
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -32,7 +38,7 @@ app.post('/submit-report', upload.single('evidence'), (req, res) => {
     const newReport = {
         location: req.body.location,
         details: req.body.details,
-        jurisdiction: req.body.jurisdiction, // Stores P1 or P2 status values
+        jurisdiction: req.body.jurisdiction, 
         lat: parseFloat(req.body.lat) || 13.0988,
         lng: parseFloat(req.body.lng) || 80.2484,
         file: req.file ? req.file.filename : null
